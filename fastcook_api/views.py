@@ -13,6 +13,8 @@ def search_recipes(request):
 
     response = requests.get(url).json()
 
+
+    
     recipe_list = []
     for i in response['hits']:
 
