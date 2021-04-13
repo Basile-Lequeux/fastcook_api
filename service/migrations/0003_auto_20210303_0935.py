@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('service', '0002_auto_20210302_1926'),
+        ('model', '0002_auto_20210302_1926'),
     ]
 
     operations = [
@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='recipe',
             name='ingredients',
-            field=models.ManyToManyField(related_name='recipes', to='service.Ingredient'),
+            field=models.ManyToManyField(related_name='recipes', to='model.Ingredient'),
         ),
         migrations.AlterField(
             model_name='ingredient',

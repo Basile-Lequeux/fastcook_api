@@ -13,11 +13,11 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ['id', 'name', 'url', 'imageUrl', 'ingredients']
+        fields = ['id', 'name', 'url', 'imageUrl', 'totalTime', 'ingredients']
         lookup_field = 'name'
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ['name', 'imageUrl']
+        fields = ['id', 'name', 'imageUrl']
