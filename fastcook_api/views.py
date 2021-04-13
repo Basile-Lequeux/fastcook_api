@@ -1,7 +1,7 @@
 import json
 from django.http import HttpResponse
 import requests
-
+from .recipeImporter import recipeImporter
 
 def search_recipes(request):
     ingr = request.GET['ingr']
