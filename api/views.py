@@ -26,12 +26,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['POST'])
     def create_recipes(self, request):
         for recipe in self.request.data:
-            query = Recipe.objects.get_or_create(name=recipe['name'], url=recipe['url'], imageUrl=recipe['imageUrl'],
+            query = Recipe.objects.get_or_create(name=recipe['name'].lower(), url=recipe['url'], imageUrl=recipe['imageUrl'],
                                          totalTime=recipe['totalTime'], ingredientsDetail=recipe['ingredientsDetail'])
-            
+
             for i in recipe['ingredients']:
                 getThisRecipe = Recipe.objects.get(name=recipe['name'])
-                created = Ingredient.objects.get_or_create(name=i)
+                created = Ingredient.objects.get_or_create(name=i.lower())
 
                 getThisRecipe.ingredients.add(created[0]) # get_or_create return a tuple, here it's -> [ingredients ,
                 # true/false]
