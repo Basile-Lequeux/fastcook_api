@@ -27,15 +27,16 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def create_recipes(self, request):
         for recipe in self.request.data:
             query = Recipe.objects.get_or_create(name=recipe['name'], url=recipe['url'], imageUrl=recipe['imageUrl'],
-                                         totalTime=recipe['totalTime'], ingredientsDetail=recipe['ingredientsDetail'])
-
+                                                 totalTime=recipe['totalTime'],
+                                                 ingredientsDetail=recipe['ingredientsDetail'])
 
             if query[1] == True:
                 for i in recipe['ingredients']:
                     getThisRecipe = Recipe.objects.get(name=recipe['name'])
                     created = Ingredient.objects.get_or_create(name=i.lower())
 
-                    getThisRecipe.ingredients.add(created[0]) # get_or_create return a tuple, here it's -> [ingredients ,
+                    getThisRecipe.ingredients.add(
+                        created[0])  # get_or_create return a tuple, here it's -> [ingredients ,
                 # true/false]
                 print(recipe['name'] + ' created')
         return Response('recipes created', status=201)
@@ -47,6 +48,19 @@ class RecipeViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(ingredients__name=ingredient)
         return queryset
 
+    @action(detail=False, methods=['DELETE'])
+    def flush_database(self, request):
+        allRecipes = Recipe.objects.all()
+        allIngredients = Ingredient.objects.all()
+        for recipe in allRecipes:
+            recipe.delete()
+            print(recipe.name + ' deleted')
+
+        for ingr in allIngredients:
+            ingr.delete()
+            print(ingr.name + ' deleted')
+
+        return Response('all recipes and all ingredients has been deleted', status=200)
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
