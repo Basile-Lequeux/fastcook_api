@@ -37,8 +37,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
                     getThisRecipe.ingredients.add(created[0]) # get_or_create return a tuple, here it's -> [ingredients ,
                 # true/false]
-            print(recipe['name'] + ' created')
-            return Response('recipes created', status=201)
+                print(recipe['name'] + ' created')
+        return Response('recipes created', status=201)
 
     def get_queryset(self):
         queryset = Recipe.objects.all()
@@ -46,6 +46,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if ingredient is not None:
             queryset = queryset.filter(ingredients__name=ingredient)
         return queryset
+
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
