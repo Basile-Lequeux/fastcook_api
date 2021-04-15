@@ -43,7 +43,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Recipe.objects.all()
-        ingredient = self.request.query_params.get('ingredient', None)
+        ingredient = self.request.query_params.get('ingredient', None) #union() https://docs.djangoproject.com/fr/3.2/ref/models/querysets/
 
         if ingredient is not None:
             for i in ingredient.split():
@@ -51,6 +51,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     queryset = queryset.filter(ingredients__name=i)
 
         return queryset
+
+    @action(detail=False, methods=['GET'])
+    def get_last_recipes(self, request):
+        queryset = Recipe.objects.all().order_by('id')
+        serializer = serializers.RecipeSerializer(queryset.reverse()[:5], many=True)
+
+        return Response(serializer.data, status=200)
+
+    @action(detail=False, methods=['GET'])
+    def get_random_recipes(self, request):
+        queryset = Recipe.objects.all().order_by('?')
+        serializer = serializers.RecipeSerializer(queryset.reverse()[:5], many=True)
+
+        return Response(serializer.data, status=200)
+
 
 
     @action(detail=False, methods=['DELETE'])
