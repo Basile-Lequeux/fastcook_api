@@ -44,9 +44,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Recipe.objects.all()
         ingredient = self.request.query_params.get('ingredient', None)
+
         if ingredient is not None:
-            queryset = queryset.filter(ingredients__name=ingredient)
+            for i in ingredient.split():
+                if i is not None:
+                    queryset = queryset.filter(ingredients__name=i)
+
         return queryset
+
 
     @action(detail=False, methods=['DELETE'])
     def flush_database(self, request):
