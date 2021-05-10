@@ -1,11 +1,18 @@
+from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
 from service.models import *
 
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password', 'placeholder': 'Password'})
+
     class Meta:
         model = User
-        fields = ['id', 'email']
+        fields = ['id', 'email', 'pseudo', 'password']
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data.get('password'))
+        return super(UserSerializer, self).create(validated_data)
 
 
 class RecipeListSerializer(serializers.ListSerializer):
@@ -21,11 +28,12 @@ class RecipeSerializer(serializers.ModelSerializer):
         list_serializer_class = RecipeListSerializer
         model = Recipe
         fields = ['id', 'name', 'url', 'imageUrl', 'totalTime', 'ingredients', 'ingredientsDetail']
-        lookup_field = 'name'
+        lookup_field = 'id'
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
         fields = ['id', 'name', 'imageUrl']
+        lookup_field = 'id'
 
