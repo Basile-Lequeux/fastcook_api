@@ -30,15 +30,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                                  totalTime=recipe['totalTime'],
                                                  ingredientsDetail=recipe['ingredientsDetail'])
 
-            if query[1] == True:
+            if query[1] == True: #if recipe is created
                 for i in recipe['ingredients']:
                     getThisRecipe = Recipe.objects.get(name=recipe['name'])
                     created = Ingredient.objects.get_or_create(name=i.lower())
 
-                    getThisRecipe.ingredients.add(
-                        created[0])  # get_or_create return a tuple, here it's -> [ingredients ,
-                # true/false]
-                print(recipe['name'] + ' created')
+                    getThisRecipe.ingredients.add(created[0])  # add current ingredient to the current recipe
+
         return Response('recipes created', status=201)
 
     def get_queryset(self):
