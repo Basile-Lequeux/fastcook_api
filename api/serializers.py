@@ -1,6 +1,8 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
-from service.models import *
+from service.models.ingredient import Ingredient
+from service.models.user import User
+from service.models.recipe import Recipe
 
 
 class UserSerializer(serializers.ModelSerializer):
