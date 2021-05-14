@@ -1,5 +1,7 @@
 from . import serializers
-from service.models import *
+from service.object.ingredient import Ingredient
+from service.object.user import User
+from service.object.recipe import Recipe
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -30,27 +32,42 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                                  totalTime=recipe['totalTime'],
                                                  ingredientsDetail=recipe['ingredientsDetail'])
 
-            if query[1] == True:
+            if query[1] == True:  # if recipe is created
                 for i in recipe['ingredients']:
                     getThisRecipe = Recipe.objects.get(name=recipe['name'])
                     created = Ingredient.objects.get_or_create(name=i.lower())
 
-                    getThisRecipe.ingredients.add(
-                        created[0])  # get_or_create return a tuple, here it's -> [ingredients ,
-                # true/false]
-                print(recipe['name'] + ' created')
+                    getThisRecipe.ingredients.add(created[0])  # add current ingredient to the current recipe
+
         return Response('recipes created', status=201)
 
     def get_queryset(self):
-        queryset = Recipe.objects.all()
-        ingredient = self.request.query_params.get('ingredient', None) #union() https://docs.djangoproject.com/fr/3.2/ref/models/querysets/
+        all_recipe = Recipe.objects.all()
+        ingredient = self.request.query_params.get('ingredient', None)
+        ingredient1 = Recipe.objects.none()
+        ingredient2 = Recipe.objects.none()
+        ingredient3 = Recipe.objects.none()
+        ingredient4 = Recipe.objects.none()
+        ingredient5 = Recipe.objects.none()
+        count = 0
 
         if ingredient is not None:
-            for i in ingredient.split():
+            for i in ingredient.split():   #separator between ingredients is a space and not a "&"
+                count = count + 1
                 if i is not None:
-                    queryset = queryset.filter(ingredients__name=i)
+                    if count == 1:
+                        ingredient1 = all_recipe.filter(ingredients__name=i)
+                    if count == 2:
+                        ingredient2 = all_recipe.filter(ingredients__name=i)
+                    if count == 3:
+                        ingredient3 = all_recipe.filter(ingredients__name=i)
+                    if count == 4:
+                        ingredient4 = all_recipe.filter(ingredients__name=i)
+                    if count == 5:
+                        ingredient5 = all_recipe.filter(ingredients__name=i)
 
-        return queryset
+        queryset = Recipe.objects.none()
+        return queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5, all=True)
 
     @action(detail=False, methods=['GET'])
     def get_last_recipes(self, request):
@@ -65,8 +82,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer = serializers.RecipeSerializer(queryset.reverse()[:5], many=True)
 
         return Response(serializer.data, status=200)
-
-
 
     @action(detail=False, methods=['DELETE'])
     def flush_database(self, request):
