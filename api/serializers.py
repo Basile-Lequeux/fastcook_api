@@ -1,12 +1,13 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework import serializers
-from service.models.ingredient import Ingredient
-from service.models.user import User
-from service.models.recipe import Recipe
+from service.object.ingredient import Ingredient
+from service.object.user import User
+from service.object.recipe import Recipe
 
 
 class UserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password', 'placeholder': 'Password'})
+    password = serializers.CharField(write_only=True, required=True,
+                                     style={'input_type': 'password', 'placeholder': 'Password'})
 
     class Meta:
         model = User
@@ -27,9 +28,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SlugRelatedField(many=True, queryset=Ingredient.objects.all(), slug_field='name')
 
     class Meta:
-        list_serializer_class = RecipeListSerializer
+        # list_serializer_class = RecipeListSerializer
         model = Recipe
-        fields = ['id', 'name', 'url', 'imageUrl', 'totalTime', 'ingredients', 'ingredientsDetail']
+        fields = ['id', 'name', 'url', 'imageUrl', 'totalTime', 'ingredients', 'ingredientsDetail', 'createdBy']
         lookup_field = 'id'
 
 
@@ -38,4 +39,3 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
         fields = ['id', 'name', 'imageUrl']
         lookup_field = 'id'
-

@@ -1,7 +1,7 @@
 from . import serializers
-from service.models.ingredient import Ingredient
-from service.models.user import User
-from service.models.recipe import Recipe
+from service.object.ingredient import Ingredient
+from service.object.user import User
+from service.object.recipe import Recipe
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
