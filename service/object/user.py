@@ -1,5 +1,7 @@
 from django.db import models
-from .recipe import Recipe
+from service.object import recipe
+
+Recipe = recipe.Recipe
 
 
 class User(models.Model):

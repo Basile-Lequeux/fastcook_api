@@ -1,9 +1,9 @@
 from django.contrib import admin
 
 from django.contrib import admin
-from service.models.ingredient import Ingredient
-from service.models.user import User
-from service.models.recipe import Recipe
+
+from service.object.user import User
+from service.object.recipe import Recipe
 
 
 admin.site.register(Recipe)
