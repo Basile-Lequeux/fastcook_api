@@ -1,6 +1,7 @@
 from django.db import models
-from .ingredient import *
+from service.object import ingredient
 
+Ingredient = ingredient.Ingredient
 
 class Recipe(models.Model):
     name = models.CharField(max_length=100, unique=True)

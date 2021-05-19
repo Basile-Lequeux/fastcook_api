@@ -11,7 +11,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'email', 'pseudo', 'password']
+        fields = ['id', 'email', 'pseudo', 'password', 'favorites']
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data.get('password'))
@@ -28,7 +28,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SlugRelatedField(many=True, queryset=Ingredient.objects.all(), slug_field='name')
 
     class Meta:
-        # list_serializer_class = RecipeListSerializer
+        list_serializer_class = RecipeListSerializer
         model = Recipe
         fields = ['id', 'name', 'url', 'imageUrl', 'totalTime', 'ingredients', 'ingredientsDetail', 'createdBy']
         lookup_field = 'id'
