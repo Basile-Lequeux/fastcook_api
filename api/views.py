@@ -23,6 +23,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
 
     @action(detail=False, methods=['POST'])
@@ -41,7 +42,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         return Response('recipes created', status=201)
 
-    def get_queryset(self):
+    @action(detail=False, methods=['GET'])
+    def search_by_ingredient(self, request):
         all_recipe = Recipe.objects.all()
         ingredient = self.request.query_params.get('ingredient', None)
         ingredient1 = Recipe.objects.none()
@@ -67,7 +69,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         ingredient5 = all_recipe.filter(ingredients__name=i)
 
         queryset = Recipe.objects.none()
-        return queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5, all=True)
+        #serializer = serializers.RecipeSerializer(queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5))
+        serializer = serializers.RecipeSerializer(queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5), many=True)
+        return Response(serializer.data, status=200)
 
     @action(detail=False, methods=['GET'])
     def get_last_recipes(self, request):
@@ -79,6 +83,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def get_random_recipes(self, request):
         queryset = Recipe.objects.all().order_by('?')
+        print(queryset)
         serializer = serializers.RecipeSerializer(queryset.reverse()[:5], many=True)
 
         return Response(serializer.data, status=200)
