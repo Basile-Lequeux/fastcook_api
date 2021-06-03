@@ -8,6 +8,7 @@ from service.object.recipe import Recipe
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True,
                                      style={'input_type': 'password', 'placeholder': 'Password'})
+    #favorites = serializers.SlugRelatedField(many=True, queryset=Recipe.objects.all(), slug_field='name')
 
     class Meta:
         model = User

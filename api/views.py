@@ -21,6 +21,23 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = serializers.UserSerializer
 
+    @action(detail=False, methods=['PUT'])
+    def put_favorite(self, request):
+        query = self.request.data
+        user = User.objects.get(id=query['id'])
+        favorite = Recipe.objects.get(id=query['favorite'])
+
+        check_favorite = User.objects.filter(favorites__id=favorite.id).values().filter(id=user.id).exists()
+        if check_favorite:
+            user.favorites.remove(favorite)
+            return 
+        else:
+            user.favorites.add(favorite)
+
+        serializer = serializers.UserSerializer(user)
+
+        return Response(serializer.data, status=200)
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
@@ -33,7 +50,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                                  totalTime=recipe['totalTime'],
                                                  ingredientsDetail=recipe['ingredientsDetail'])
 
-            if query[1] == True:  # if recipe is created
+            if query[1]:  # if recipe is created
                 for i in recipe['ingredients']:
                     getThisRecipe = Recipe.objects.get(name=recipe['name'])
                     created = Ingredient.objects.get_or_create(name=i.lower())
@@ -54,7 +71,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         count = 0
 
         if ingredient is not None:
-            for i in ingredient.split():   #separator between ingredients is a space and not a "&"
+            for i in ingredient.split():  # separator between ingredients is a space and not a "&"
                 count = count + 1
                 if i is not None:
                     if count == 1:
@@ -69,8 +86,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         ingredient5 = all_recipe.filter(ingredients__name=i)
 
         queryset = Recipe.objects.none()
-        #serializer = serializers.RecipeSerializer(queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5))
-        serializer = serializers.RecipeSerializer(queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5), many=True)
+        # serializer = serializers.RecipeSerializer(queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5))
+        serializer = serializers.RecipeSerializer(
+            queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5), many=True)
         return Response(serializer.data, status=200)
 
     @action(detail=False, methods=['GET'])
