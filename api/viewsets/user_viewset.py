@@ -35,3 +35,14 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=200)
 
         return Response("wrong email or password", status=400)
+
+    @action(detail=False, methods=['GET'])
+    def detail_favorite(self, request):
+        query = self.request.data
+        user = User.objects.get(id=query['id'])
+        queryset = user.favorites.all()
+        serializer = serializers.RecipeSerializer(queryset, many=True)
+
+        return Response(serializer.data, status=200)
+
+

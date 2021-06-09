@@ -68,7 +68,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def get_random_recipes(self, request):
         queryset = Recipe.objects.all().order_by('?')
-        print(queryset)
         serializer = serializers.RecipeSerializer(queryset.reverse()[:5], many=True)
 
         return Response(serializer.data, status=200)
