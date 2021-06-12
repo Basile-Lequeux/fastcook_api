@@ -59,6 +59,17 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=200)
 
     @action(detail=False, methods=['GET'])
+    def get_by_name(self, request):
+        name = self.request.query_params.get('name', None)
+        #mettre un filtre depuis le front
+        queryset = Recipe.objects.filter(name__icontains=name)
+
+        serializer = serializers.RecipeSerializer(queryset, many=True)
+        return Response(serializer.data, status=200)
+
+
+
+    @action(detail=False, methods=['GET'])
     def get_last_recipes(self, request):
         queryset = Recipe.objects.all().order_by('id')
         serializer = serializers.RecipeSerializer(queryset.reverse()[:5], many=True)
