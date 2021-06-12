@@ -26,9 +26,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def connection(self, request):
-        query = self.request.data
-        login = query['login']
-        password = query['password']
+        login = self.request.query_params.get('login', None)
+        password = self.request.query_params.get('password', None)
         user = User.objects.get(email=login)
         if user.password == password:
             serializer = serializers.UserSerializer(user)
