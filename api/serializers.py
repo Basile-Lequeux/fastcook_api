@@ -28,6 +28,7 @@ class RecipeListSerializer(serializers.ListSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SlugRelatedField(many=True, queryset=Ingredient.objects.all(), slug_field='name')
 
+
     class Meta:
         list_serializer_class = RecipeListSerializer
         model = Recipe

@@ -10,5 +10,6 @@ class User(models.Model):
     pseudo = models.CharField(max_length=100, unique=True)
     favorites = models.ManyToManyField(Recipe, related_name='user_favorite', blank=True)
 
+
     def __str__(self):
         return self.email

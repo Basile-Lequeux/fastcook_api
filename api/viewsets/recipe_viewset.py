@@ -61,11 +61,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def get_by_name(self, request):
         name = self.request.query_params.get('name', None)
-        #mettre un filtre depuis le front
-        queryset = Recipe.objects.filter(name__icontains=name)
-
-        serializer = serializers.RecipeSerializer(queryset, many=True)
-        return Response(serializer.data, status=200)
+        if name:
+            if len(name) > 3:
+                queryset = Recipe.objects.filter(name__icontains=name)
+                serializer = serializers.RecipeSerializer(queryset, many=True)
+                return Response(serializer.data, status=200)
+        return Response('we can\'t found any recipe with these info please retry', status=404)
 
 
 
