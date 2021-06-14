@@ -68,8 +68,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data, status=200)
         return Response('we can\'t found any recipe with these info please retry', status=404)
 
-
-
     @action(detail=False, methods=['GET'])
     def get_last_recipes(self, request):
         queryset = Recipe.objects.all().order_by('id')
@@ -86,13 +84,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['DELETE'])
     def flush_database(self, request):
-        allRecipes = Recipe.objects.all()
-        allIngredients = Ingredient.objects.all()
-        for recipe in allRecipes:
+        all_recipes = Recipe.objects.all()
+        all_ingredients = Ingredient.objects.all()
+        for recipe in all_recipes:
             recipe.delete()
             print(recipe.name + ' deleted')
 
-        for ingr in allIngredients:
+        for ingr in all_ingredients:
             ingr.delete()
             print(ingr.name + ' deleted')
 

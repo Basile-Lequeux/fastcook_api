@@ -46,7 +46,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         return Response(status=404)
 
-    @action(detail=False, methods=['PUT'])
+    @action(detail=False, methods=['PUT', 'POST'])
     def edit_profile(self, request):
         query = self.request.data
         user_id = query['id']
@@ -54,22 +54,29 @@ class UserViewSet(viewsets.ModelViewSet):
 
         if user_id:
             user = User.objects.get(id=user_id)
+            if query['pseudo'] != "":
+                user.pseudo = query['pseudo']
             if user.password == password:
-                if query['pseudo']:
-                    user.pseudo = query['pseudo']
-                    user.save()
-                if query['new_password']:
+                if query['new_password'] != "":
                     user.password = query['new_password']
-                    user.save()
 
-                return Response(status=200)
+            user.save()
+            return Response(status=200)
 
+    @action(detail=False, methods=['PUT'])
+    def increment(self, request):
+        user_id = self.request.query_params.get('id', None)
+        made_recipe = self.request.query_params.get('madeRecipe', None)
+        recipe_created = self.request.query_params.get('createRecipe', None)
+        if user_id:
+            user = User.objects.get(id=user_id)
+            if made_recipe:
+                user.madeRecipe = user.madeRecipe + 1
+                user.save()
+                return Response('added +1 in madeRecipe', status=200)
+            if recipe_created:
+                user.recipeCreated = user.recipeCreated + 1
+                user.save()
+                return Response('added +1 in recipeCreated', status=200)
 
-
-
-
-
-
-
-
-
+        return Response(status=404)
