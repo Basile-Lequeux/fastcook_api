@@ -17,12 +17,13 @@ class UserViewSet(viewsets.ModelViewSet):
         favorite = Recipe.objects.get(id=query['favorite'])
 
         check_favorite = User.objects.filter(favorites__id=favorite.id).values().filter(id=user.id).exists()
+        serialize = serializers.UserSerializer(user)
         if check_favorite:
             user.favorites.remove(favorite)
-            return Response("favorite removed", status=200)
+            return Response(serialize.data, status=200)
         else:
             user.favorites.add(favorite)
-            return Response("favorite added", status=200)
+            return Response(serialize.data, status=200)
 
     @action(detail=False, methods=['GET'])
     def connection(self, request):
