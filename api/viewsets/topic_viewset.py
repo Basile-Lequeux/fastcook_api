@@ -38,3 +38,14 @@ class TopicViewSet(viewsets.ModelViewSet):
         serializer = serializers.MessageSerializer(messages, many=True)
 
         return Response(serializer.data, status=200)
+
+    @action(detail=False, methods=['POST'])
+    def put_icon(self, request):
+        topic_id = self.request.query_params.get('id', None)
+        icon_string = self.request.query_params.get('icon', None)
+
+        topic = Topic.objects.get(id=topic_id)
+        topic.icon = icon_string
+        topic.save()
+
+        return Response(status=200)
