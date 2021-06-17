@@ -23,8 +23,10 @@ class TopicViewSet(viewsets.ModelViewSet):
 
         new_message = Message.objects.create(text=message, topic_related=topic, user_related=user)
         topic.message.add(new_message)
+        serialize = serializers.TopicSerializer(topic)
+        #renvoyer tout les messages comme favoris
 
-        return Response("message posted", status=200)
+        return Response(serialize.data, status=200)
 
     @action(detail=False, methods=['GET'])
     def display_topic_messages(self, request):

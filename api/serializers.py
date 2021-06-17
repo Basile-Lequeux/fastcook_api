@@ -50,12 +50,12 @@ class TopicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Topic
-        fields = ['id', 'title', 'message', 'createdBy']
+        fields = ['id', 'title', 'message', 'icon']
 
 
 class MessageSerializer(serializers.ModelSerializer):
-    user_related = serializers.SlugRelatedField(slug_field='pseudo', read_only=True)
+    author = serializers.SlugRelatedField(slug_field='pseudo', read_only=True)
 
     class Meta:
         model = Message
-        fields = ['text', 'user_related']
+        fields = ['id', 'text', 'author', 'topic_id']
