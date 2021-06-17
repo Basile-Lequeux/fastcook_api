@@ -3,12 +3,15 @@ from rest_framework import serializers
 from service.object.ingredient import Ingredient
 from service.object.user import User
 from service.object.recipe import Recipe
+from service.object.topic import Topic
+from service.object.message import Message
 
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=True,
                                      style={'input_type': 'password', 'placeholder': 'Password'})
-    #favorites = serializers.SlugRelatedField(many=True, queryset=Recipe.objects.all(), slug_field='name')
+
+    # favorites = serializers.SlugRelatedField(many=True, queryset=Recipe.objects.all(), slug_field='name')
 
     class Meta:
         model = User
@@ -28,7 +31,6 @@ class RecipeListSerializer(serializers.ListSerializer):
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = serializers.SlugRelatedField(many=True, queryset=Ingredient.objects.all(), slug_field='name')
 
-
     class Meta:
         list_serializer_class = RecipeListSerializer
         model = Recipe
@@ -41,3 +43,19 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
         fields = ['id', 'name', 'imageUrl']
         lookup_field = 'id'
+
+
+class TopicSerializer(serializers.ModelSerializer):
+    message = serializers.SlugRelatedField(many=True, queryset=Message.objects.all(), slug_field='text')
+
+    class Meta:
+        model = Topic
+        fields = ['id', 'title', 'message', 'createdBy']
+
+
+class MessageSerializer(serializers.ModelSerializer):
+    user_related = serializers.SlugRelatedField(slug_field='pseudo', read_only=True)
+
+    class Meta:
+        model = Message
+        fields = ['text', 'user_related']

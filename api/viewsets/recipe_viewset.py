@@ -11,7 +11,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.RecipeSerializer
 
     @action(detail=False, methods=['POST'])
-    def create_recipes(self, request):
+    def post_recipes(self, request):
         for recipe in self.request.data:
             query = Recipe.objects.get_or_create(name=recipe['name'], url=recipe['url'], imageUrl=recipe['imageUrl'],
                                                  totalTime=recipe['totalTime'],
@@ -19,12 +19,29 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
             if query[1]:  # if recipe is created
                 for i in recipe['ingredients']:
-                    getThisRecipe = Recipe.objects.get(name=recipe['name'])
+                    get_this_recipe = Recipe.objects.get(name=recipe['name'])
                     created = Ingredient.objects.get_or_create(name=i.lower())
 
-                    getThisRecipe.ingredients.add(created[0])  # add current ingredient to the current recipe
+                    get_this_recipe.ingredients.add(created[0])  # add current ingredient to the current recipe
 
         return Response('recipes created', status=201)
+
+    @action(detail=False, methods=['POST'])
+    def create_recipe(self):
+        request = self.request.data
+        recipe = request['recipe']
+        user_id = request['userid']
+
+        query = Recipe.objects.get_or_create(name=recipe['name'], url=recipe['url'], imageUrl=recipe['imageUrl'],
+                                             totalTime=recipe['totalTime'],
+                                             ingredientsDetail=recipe['ingredientsDetail'], createdBy=user_id)
+
+        if query[1]:
+            for i in recipe['ingredients']:
+                get_this_recipe = Recipe.objects.get(name=recipe['name'])
+                created = Ingredient.objects.get_or_create(name=i.lower())
+
+                get_this_recipe.ingredients.add(created[0])
 
     @action(detail=False, methods=['GET'])
     def search_by_ingredient(self, request):
@@ -53,7 +70,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
                         ingredient5 = all_recipe.filter(ingredients__name=i)
 
         queryset = Recipe.objects.none()
-        # serializer = serializers.RecipeSerializer(queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5))
         serializer = serializers.RecipeSerializer(
             queryset.union(ingredient1, ingredient2, ingredient3, ingredient4, ingredient5), many=True)
         return Response(serializer.data, status=200)
