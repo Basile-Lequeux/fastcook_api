@@ -21,7 +21,7 @@ class TopicViewSet(viewsets.ModelViewSet):
         topic = Topic.objects.get(id=topic_id)
         user = User.objects.get(id=user_id)
 
-        new_message = Message.objects.create(text=message, topic_related=topic, user_related=user)
+        new_message = Message.objects.create(text=message, topic_id=topic, author=user)
         topic.message.add(new_message)
         serialize = serializers.TopicSerializer(topic)
         #renvoyer tout les messages comme favoris
