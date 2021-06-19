@@ -34,7 +34,7 @@ class RecipeSerializer(serializers.ModelSerializer):
     class Meta:
         list_serializer_class = RecipeListSerializer
         model = Recipe
-        fields = ['id', 'name', 'url', 'imageUrl', 'totalTime', 'ingredients', 'ingredientsDetail', 'createdBy']
+        fields = ['id', 'name', 'url', 'imageUrl', 'totalTime', 'ingredients', 'ingredientsDetail', 'createdBy', 'moderate']
         lookup_field = 'id'
 
 

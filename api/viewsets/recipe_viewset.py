@@ -1,6 +1,7 @@
 from api import serializers
 from service.object.ingredient import Ingredient
 from service.object.recipe import Recipe
+from service.object.user import User
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -27,21 +28,29 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response('recipes created', status=201)
 
     @action(detail=False, methods=['POST'])
-    def create_recipe(self):
+    def create_recipe(self, request):
         request = self.request.data
         recipe = request['recipe']
         user_id = request['userid']
+        user = User.objects.get(id=user_id)
 
-        query = Recipe.objects.get_or_create(name=recipe['name'], url=recipe['url'], imageUrl=recipe['imageUrl'],
-                                             totalTime=recipe['totalTime'],
-                                             ingredientsDetail=recipe['ingredientsDetail'], createdBy=user_id)
+        Recipe.objects.get_or_create(name=recipe['name'], url=recipe['url'], imageUrl=recipe['imageUrl'],
+                                     totalTime=recipe['totalTime'],
+                                     ingredientsDetail=recipe['ingredientsDetail'], createdBy=user, moderate=False)
 
-        if query[1]:
-            for i in recipe['ingredients']:
-                get_this_recipe = Recipe.objects.get(name=recipe['name'])
-                created = Ingredient.objects.get_or_create(name=i.lower())
+        new_recipe = Recipe.objects.get(name=recipe['name'])
 
-                get_this_recipe.ingredients.add(created[0])
+        serialize = serializers.RecipeSerializer(new_recipe, many=False)
+
+        return Response(serialize.data, status=200)
+
+    @action(detail=False, methods=['GET'])
+    def get_non_moderate_recipe(self, request):
+        query = Recipe.objects.all().filter(moderate=False)
+
+        serializer = serializers.RecipeSerializer(query, many=True)
+
+        return Response(serializer.data, status=200)
 
     @action(detail=False, methods=['GET'])
     def search_by_ingredient(self, request):
