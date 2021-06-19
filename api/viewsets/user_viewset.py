@@ -74,10 +74,12 @@ class UserViewSet(viewsets.ModelViewSet):
             if made_recipe:
                 user.madeRecipe = user.madeRecipe + 1
                 user.save()
-                return Response('added +1 in madeRecipe', status=200)
+                serializer = serializers.UserSerializer(user)
+                return Response(serializer.data, status=200)
             if recipe_created:
                 user.recipeCreated = user.recipeCreated + 1
                 user.save()
-                return Response('added +1 in recipeCreated', status=200)
+                serializer = serializers.UserSerializer(user)
+                return Response(serializer.data, status=200)
 
         return Response(status=404)
