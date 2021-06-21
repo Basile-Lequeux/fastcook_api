@@ -85,11 +85,11 @@ class UserViewSet(viewsets.ModelViewSet):
 
         if user_id:
             if moderate:
-                recipe = Recipe.objects.filter(createdBy=user_id).filter(moderate=False)
+                recipe = Recipe.objects.filter(createdBy=user_id).filter(moderate=True)
                 serializer = serializers.RecipeSerializer(recipe, many=True)
                 return Response(serializer.data, status=200)
             else:
-                recipe = Recipe.objects.filter(createdBy=user_id).filter(moderate=True)
+                recipe = Recipe.objects.filter(createdBy=user_id).filter(moderate=False)
                 serializer = serializers.RecipeSerializer(recipe, many=True)
                 return Response(serializer.data, status=200)
 
