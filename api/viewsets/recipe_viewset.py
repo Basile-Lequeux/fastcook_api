@@ -39,7 +39,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                      ingredientsDetail=recipe['ingredientsDetail'], createdBy=user, moderate=False)
 
         new_recipe = Recipe.objects.get(name=recipe['name'])
-
+        user.recipeCreated += 1
+        user.save()
         serialize = serializers.RecipeSerializer(new_recipe, many=False)
 
         return Response(serialize.data, status=200)
@@ -54,7 +55,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def search_by_ingredient(self, request):
-        all_recipe = Recipe.objects.all()
+        all_recipe = Recipe.objects.filter(moderate=False)
         ingredient = self.request.query_params.get('ingredient', None)
         ingredient1 = Recipe.objects.none()
         ingredient2 = Recipe.objects.none()
@@ -88,21 +89,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
         name = self.request.query_params.get('name', None)
         if name:
             if len(name) > 3:
-                queryset = Recipe.objects.filter(name__icontains=name)
+                queryset = Recipe.objects.filter(name__icontains=name, moderate=False)
                 serializer = serializers.RecipeSerializer(queryset, many=True)
                 return Response(serializer.data, status=200)
         return Response('we can\'t found any recipe with these info please retry', status=404)
 
     @action(detail=False, methods=['GET'])
     def get_last_recipes(self, request):
-        queryset = Recipe.objects.all().order_by('id')
+        queryset = Recipe.objects.filter(moderate=False).order_by('id')
         serializer = serializers.RecipeSerializer(queryset.reverse()[:5], many=True)
 
         return Response(serializer.data, status=200)
 
     @action(detail=False, methods=['GET'])
     def get_random_recipes(self, request):
-        queryset = Recipe.objects.all().order_by('?')
+        queryset = Recipe.objects.filter(moderate=False).order_by('?')
         serializer = serializers.RecipeSerializer(queryset.reverse()[:5], many=True)
 
         return Response(serializer.data, status=200)
