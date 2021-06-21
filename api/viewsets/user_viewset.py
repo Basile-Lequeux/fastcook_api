@@ -77,3 +77,20 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=200)
 
         return Response(status=404)
+
+    @action(detail=False, methods=['GET'])
+    def get_created_by_user(self, request):
+        user_id = self.request.query_params.get('id', None)
+        moderate = self.request.query_params.get('moderate', None)
+
+        if user_id:
+            if moderate:
+                recipe = Recipe.objects.filter(createdBy=user_id).filter(moderate=False)
+                serializer = serializers.RecipeSerializer(recipe, many=True)
+                return Response(serializer.data, status=200)
+            else:
+                recipe = Recipe.objects.filter(createdBy=user_id).filter(moderate=True)
+                serializer = serializers.RecipeSerializer(recipe, many=True)
+                return Response(serializer.data, status=200)
+
+        return Response(status=404)
