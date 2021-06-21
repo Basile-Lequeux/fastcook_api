@@ -65,21 +65,15 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(status=200)
 
     @action(detail=False, methods=['PUT'])
-    def increment(self, request):
-        user_id = self.request.query_params.get('id', None)
-        made_recipe = self.request.query_params.get('madeRecipe', None)
-        recipe_created = self.request.query_params.get('createRecipe', None)
+    def increment_made_recipe(self, request):
+        query = self.request.data
+
+        user_id = query['id']
         if user_id:
             user = User.objects.get(id=user_id)
-            if made_recipe:
-                user.madeRecipe = user.madeRecipe + 1
-                user.save()
-                serializer = serializers.UserSerializer(user)
-                return Response(serializer.data, status=200)
-            if recipe_created:
-                user.recipeCreated = user.recipeCreated + 1
-                user.save()
-                serializer = serializers.UserSerializer(user)
-                return Response(serializer.data, status=200)
+            user.madeRecipe = user.madeRecipe + 1
+            user.save()
+            serializer = serializers.UserSerializer(user)
+            return Response(serializer.data, status=200)
 
         return Response(status=404)
