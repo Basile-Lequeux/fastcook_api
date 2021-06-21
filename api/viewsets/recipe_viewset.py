@@ -36,7 +36,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         Recipe.objects.get_or_create(name=recipe['name'], url=recipe['url'], imageUrl=recipe['imageUrl'],
                                      totalTime=recipe['totalTime'],
-                                     ingredientsDetail=recipe['ingredientsDetail'], createdBy=user, moderate=False)
+                                     ingredientsDetail=recipe['ingredientsDetail'], createdBy=user, moderate=True)
 
         new_recipe = Recipe.objects.get(name=recipe['name'])
         user.recipeCreated += 1
