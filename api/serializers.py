@@ -13,9 +13,10 @@ class UserSerializer(serializers.ModelSerializer):
 
     # favorites = serializers.SlugRelatedField(many=True, queryset=Recipe.objects.all(), slug_field='name')
 
+    # https://docs.djangoproject.com/en/3.2/topics/auth/passwords/
     class Meta:
         model = User
-        fields = ['id', 'email', 'pseudo', 'password', 'favorites', 'madeRecipe', 'recipeCreated']
+        fields = ['id', 'email', 'pseudo', 'favorites', 'password', 'madeRecipe', 'recipeCreated']
 
     def create(self, validated_data):
         validated_data['password'] = make_password(validated_data.get('password'))

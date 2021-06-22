@@ -4,6 +4,7 @@ from api import serializers
 from service.object.recipe import Recipe
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, action
+from django.contrib.auth.hashers import check_password, make_password
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -30,7 +31,8 @@ class UserViewSet(viewsets.ModelViewSet):
         login = self.request.query_params.get('login', None)
         password = self.request.query_params.get('password', None)
         user = User.objects.get(email=login)
-        if user.password == password:
+
+        if check_password(password, user.password):
             serializer = serializers.UserSerializer(user)
             return Response(serializer.data, status=200)
 
@@ -57,12 +59,14 @@ class UserViewSet(viewsets.ModelViewSet):
             user = User.objects.get(id=user_id)
             if query['pseudo'] != "":
                 user.pseudo = query['pseudo']
-            if user.password == password:
+            if check_password(password, user.password):
                 if query['new_password'] != "":
-                    user.password = query['new_password']
+                    user.password = make_password(query['new_password'])
 
             user.save()
+            print(user.password)
             return Response(status=200)
+        return Response("can't find userid", status=404)
 
     @action(detail=False, methods=['PUT'])
     def increment_made_recipe(self, request):

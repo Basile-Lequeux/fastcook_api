@@ -1,3 +1,5 @@
+from rest_framework.parsers import FileUploadParser
+
 from api import serializers
 from service.object.ingredient import Ingredient
 from service.object.recipe import Recipe
@@ -8,6 +10,7 @@ from rest_framework import viewsets
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
+    parser_classes = [FileUploadParser]
     queryset = Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
 
@@ -26,6 +29,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
                     get_this_recipe.ingredients.add(created[0])  # add current ingredient to the current recipe
 
         return Response('recipes created', status=201)
+
+    @action(detail=False, methods=['POST'])
+    def test(self, request, format=None):
+        file_obj = request.data['file']
+        print(file_obj)
+
+        return Response(status=200)
 
     @action(detail=False, methods=['POST'])
     def create_recipe(self, request):
