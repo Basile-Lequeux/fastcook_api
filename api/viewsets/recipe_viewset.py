@@ -60,7 +60,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe_created = query[1]
 
         if recipe_created:
-            cloudinary.uploader.upload(data_uri, folder='v1/recipeImage', public_id=recipe_name.replace(" ", ""), overwrite=True)
+            cloudinary.uploader.upload(data_uri, folder='v1/recipeImage', public_id=recipe_name.replace(" ", ""),
+                                       overwrite=True, transformation=[{'quality': 60, 'crop': 'scale'}])
             new_recipe = Recipe.objects.get(name=recipe['name'])
             user.recipeCreated += 1
             user.save()
