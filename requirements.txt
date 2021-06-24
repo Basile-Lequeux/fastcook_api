@@ -5,3 +5,4 @@ markdown
 django-filter
 djangorestframework~=3.12.2
 requests~=2.25.1
+cloudinary

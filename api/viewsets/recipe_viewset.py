@@ -1,3 +1,4 @@
+import cloudinary.uploader
 from rest_framework.parsers import FileUploadParser
 
 from api import serializers
@@ -10,7 +11,6 @@ from rest_framework import viewsets
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    parser_classes = [FileUploadParser]
     queryset = Recipe.objects.all()
     serializer_class = serializers.RecipeSerializer
 
@@ -31,9 +31,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response('recipes created', status=201)
 
     @action(detail=False, methods=['POST'])
-    def test(self, request, format=None):
-        file_obj = request.data['file']
-        print(file_obj)
+    def test(self, request):
+        query = self.request.data
+        image_str = query['test']
+        data_uri = "data:image/png;base64," + image_str
+
+        cloudinary.uploader.upload(data_uri, folder='recipeImage', public_id='test2', overwrite=True)
 
         return Response(status=200)
 
@@ -42,19 +45,32 @@ class RecipeViewSet(viewsets.ModelViewSet):
         request = self.request.data
         recipe = request['recipe']
         user_id = request['userid']
+        image_str = request['image']
+        data_uri = "data:image/png;base64," + image_str
+        recipe_name = recipe['name']
+        image_url = "https://res.cloudinary.com/fastcook/image/upload/v1/recipeImage/" + recipe_name.replace(" ", "") + ".jpg"
+
         user = User.objects.get(id=user_id)
+        cloudinary.uploader.upload(data_uri, folder='v1/recipeImage', public_id=recipe_name.replace(" ", ""), overwrite=True)
 
-        Recipe.objects.get_or_create(name=recipe['name'], imageUrl=recipe['imageUrl'],
-                                     totalTime=recipe['totalTime'],
-                                     ingredientsDetail=recipe['ingredientsDetail'], stepList=recipe['stepList'],
-                                     createdBy=user, moderate=True)
+        query = Recipe.objects.get_or_create(name=recipe_name, imageUrl=image_url,
+                                             totalTime=recipe['totalTime'],
+                                             ingredientsDetail=recipe['ingredientsDetail'], stepList=recipe['stepList'],
+                                             createdBy=user, moderate=True)
 
-        new_recipe = Recipe.objects.get(name=recipe['name'])
-        user.recipeCreated += 1
-        user.save()
-        serialize = serializers.RecipeSerializer(new_recipe, many=False)
+        recipe_created = query[1]
 
-        return Response(serialize.data, status=200)
+        if recipe_created:
+            new_recipe = Recipe.objects.get(name=recipe['name'])
+            user.recipeCreated += 1
+            user.save()
+            serialize = serializers.RecipeSerializer(new_recipe, many=False)
+            return Response(serialize.data, status=201)
+
+        if not recipe_created:
+            return Response('recipe already exists', status=409)
+
+        return Response('error when recipe was created', status=404)
 
     @action(detail=False, methods=['GET'])
     def get_non_moderate_recipe(self, request):

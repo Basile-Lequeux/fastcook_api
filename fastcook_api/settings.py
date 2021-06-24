@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+import cloudinary
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'service',
     'api',
+    'cloudinary',
     'rest_framework'
 ]
 
@@ -127,3 +128,9 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 django_heroku.settings(locals())
+
+cloudinary.config(
+            cloud_name="fastcook",
+            api_key="399315776899381",
+            api_secret="TkXAASYcEf1iwgtW58IXzbfuiq0",
+        )
