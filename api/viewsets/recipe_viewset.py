@@ -51,7 +51,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         image_url = "https://res.cloudinary.com/fastcook/image/upload/v1/recipeImage/" + recipe_name.replace(" ", "") + ".jpg"
 
         user = User.objects.get(id=user_id)
-        cloudinary.uploader.upload(data_uri, folder='v1/recipeImage', public_id=recipe_name.replace(" ", ""), overwrite=True)
 
         query = Recipe.objects.get_or_create(name=recipe_name, imageUrl=image_url,
                                              totalTime=recipe['totalTime'],
@@ -61,6 +60,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe_created = query[1]
 
         if recipe_created:
+            cloudinary.uploader.upload(data_uri, folder='v1/recipeImage', public_id=recipe_name.replace(" ", ""), overwrite=True)
             new_recipe = Recipe.objects.get(name=recipe['name'])
             user.recipeCreated += 1
             user.save()
