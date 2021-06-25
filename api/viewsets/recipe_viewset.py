@@ -65,10 +65,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
                                        overwrite=True, invalidate=True,
                                        transformation=[{'quality': 60, 'crop': 'scale'}], tags='recipe_image')
 
-            new_recipe = Recipe.objects.get(name=recipe['name'])
             user.recipeCreated += 1
             user.save()
-            serialize = serializers.RecipeSerializer(new_recipe, many=False)
+            serialize = serializers.UserSerializer(user, many=False)
             return Response(serialize.data, status=201)
 
         if not recipe_created:
